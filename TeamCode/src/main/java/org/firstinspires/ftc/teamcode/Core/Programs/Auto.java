@@ -22,15 +22,7 @@ public class Auto extends UpliftAuto {
 
     @Override
     public void body() throws InterruptedException {
-        robot.getLeftFront().setPower(0.5);
-        robot.getLeftBack().setPower(0.5);
-        robot.getRightFront().setPower(0.5);
-        robot.getRightBack().setPower(0.5);
-        Thread.sleep(1000);
-        robot.getLeftFront().setPower(0);
-        robot.getLeftBack().setPower(0);
-        robot.getRightFront().setPower(0);
-        robot.getRightBack().setPower(0);
+       setRobotPowerForward(0.5);
 
 
     }
@@ -39,4 +31,31 @@ public class Auto extends UpliftAuto {
     public void exit() throws InterruptedException {
 
     }
+
+    public void setRobotPowerForward(double power){
+        robot.getLeftFront().setPower(power);
+        robot.getLeftBack().setPower(power);
+        robot.getRightFront().setPower(power);
+        robot.getRightBack().setPower(power);
+    }
+    public void setRobotPowerBackward(double power){
+        robot.getLeftFront().setPower(-power);
+        robot.getLeftBack().setPower(-power);
+        robot.getRightFront().setPower(-power);
+        robot.getRightBack().setPower(-power);
+    }
+    public void setRobotPowerRight(double power){
+        robot.getLeftFront().setPower(-power);
+        robot.getLeftBack().setPower(power);
+        robot.getRightFront().setPower(-power);
+        robot.getRightBack().setPower(power);
+    }
+    public void setRobotPowerLeft(double power){
+        robot.getLeftFront().setPower(power);
+        robot.getLeftBack().setPower(-power);
+        robot.getRightFront().setPower(power);
+        robot.getRightBack().setPower(-power);
+    }
+
+
 }

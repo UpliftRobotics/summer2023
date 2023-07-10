@@ -20,7 +20,6 @@ public class Main {
 
         hardwareMap = opMode.hardwareMap;
 
-
         lf = hardwareMap.get(DcMotor.class, "left_front");
         rf = hardwareMap.get(DcMotor.class, "right_front");
         lb = hardwareMap.get(DcMotor.class, "left_back");
