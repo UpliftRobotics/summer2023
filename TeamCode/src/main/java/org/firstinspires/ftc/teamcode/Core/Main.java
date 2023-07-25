@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class Main {
-    DcMotor lf, rf, lb, rb;
+    DcMotor lt, rt, lb, rb;
 
     public LinearOpMode opMode;
     public HardwareMap hardwareMap;
@@ -20,33 +20,33 @@ public class Main {
 
         hardwareMap = opMode.hardwareMap;
 
-        lf = hardwareMap.get(DcMotor.class, "left_front");
-        rf = hardwareMap.get(DcMotor.class, "right_front");
-        lb = hardwareMap.get(DcMotor.class, "left_back");
-        rb = hardwareMap.get(DcMotor.class, "right_back");
+        lt = hardwareMap.get(DcMotor.class, "left_top");
+        rt = hardwareMap.get(DcMotor.class, "right_top");
+        lb = hardwareMap.get(DcMotor.class, "left_bottom");
+        rb = hardwareMap.get(DcMotor.class, "right_bottom");
 
     }
 
-    public DcMotor getLeftFront()
+    public DcMotor getLeftTop()
     {
-        return lf;
+        return lt;
 
     }
 
 
-    public DcMotor getRightFront()
+    public DcMotor getRightTop()
     {
-        return rf;
+        return rt;
     }
 
-    public DcMotor getLeftBack()
+    public DcMotor getLeftBottom()
     {
         return lb;
 
     }
 
 
-    public DcMotor getRightBack()
+    public DcMotor getRightBottom()
     {
         return rb;
     }

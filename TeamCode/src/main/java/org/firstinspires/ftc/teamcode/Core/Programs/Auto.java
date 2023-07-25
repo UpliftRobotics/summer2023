@@ -22,7 +22,7 @@ public class Auto extends UpliftAuto {
 
     @Override
     public void body() throws InterruptedException {
-       setRobotPowerForward(0.5);
+//       setRobotPowerForward(0.5);
 
 
     }
@@ -32,30 +32,30 @@ public class Auto extends UpliftAuto {
 
     }
 
-    public void setRobotPowerForward(double power){
-        robot.getLeftFront().setPower(power);
-        robot.getLeftBack().setPower(power);
-        robot.getRightFront().setPower(power);
-        robot.getRightBack().setPower(power);
-    }
-    public void setRobotPowerBackward(double power){
-        robot.getLeftFront().setPower(-power);
-        robot.getLeftBack().setPower(-power);
-        robot.getRightFront().setPower(-power);
-        robot.getRightBack().setPower(-power);
-    }
-    public void setRobotPowerRight(double power){
-        robot.getLeftFront().setPower(-power);
-        robot.getLeftBack().setPower(power);
-        robot.getRightFront().setPower(-power);
-        robot.getRightBack().setPower(power);
-    }
-    public void setRobotPowerLeft(double power){
-        robot.getLeftFront().setPower(power);
-        robot.getLeftBack().setPower(-power);
-        robot.getRightFront().setPower(power);
-        robot.getRightBack().setPower(-power);
-    }
+//    public void setRobotPowerForward(double power){
+//        robot.getLeftFront().setPower(power);
+//        robot.getLeftBack().setPower(power);
+//        robot.getRightFront().setPower(power);
+//        robot.getRightBack().setPower(power);
+//    }
+//    public void setRobotPowerBackward(double power){
+//        robot.getLeftFront().setPower(-power);
+//        robot.getLeftBack().setPower(-power);
+//        robot.getRightFront().setPower(-power);
+//        robot.getRightBack().setPower(-power);
+//    }
+//    public void setRobotPowerRight(double power){
+//        robot.getLeftFront().setPower(-power);
+//        robot.getLeftBack().setPower(power);
+//        robot.getRightFront().setPower(-power);
+//        robot.getRightBack().setPower(power);
+//    }
+//    public void setRobotPowerLeft(double power){
+//        robot.getLeftFront().setPower(power);
+//        robot.getLeftBack().setPower(-power);
+//        robot.getRightFront().setPower(power);
+//        robot.getRightBack().setPower(-power);
+//    }
 
 
 }
