@@ -12,7 +12,7 @@ import org.firstinspires.ftc.teamcode.Core.UpliftAuto;
 
 
 @TeleOp(name = "test", group = "Opmodes")
-public class teleop extends UpliftAuto {
+public class teleop extends UpliftTele {
 
     Main robot;
     @Override
