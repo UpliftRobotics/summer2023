@@ -1,40 +1,69 @@
-package org.firstinspires.ftc.teamcode.Core.Programs;
+package org.firstinspires.ftc.teamcode;
 
-import static com.google.blocks.ftcrobotcontroller.util.Identifier.RANGE;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.Gamepad;
 
-import android.util.Range;
+import org.firstinspires.ftc.teamcode.Core.Programs.Robot;
+import org.firstinspires.ftc.teamcode.Core.Programs.Vector2d;
 
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+@com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "Diff Swerve TeleOp", group = "TeleOp")
+public class TeleOp extends OpMode {
+    Robot robot;
 
-import org.firstinspires.ftc.teamcode.Core.Main;
-import org.firstinspires.ftc.teamcode.Core.UpliftAuto;
+    //deadband for joysticks
+    public double DEADBAND_MAG = 0.1;
+    public Vector2d DEADBAND_VEC = new Vector2d(DEADBAND_MAG, DEADBAND_MAG);
 
+    public boolean willResetIMU = true;
 
-@TeleOp(name = "test", group = "Opmodes")
-public class teleop extends UpliftTele {
-
-    Main robot;
-    @Override
-    public void initHardware() {
-
+    public void init() {
+        robot = new Robot(this, false);
     }
 
-    @Override
-    public void initAction() {
-
+    //allows driver to indicate that the IMU should not be reset
+    //used when starting TeleOp after auto or if program crashes in the middle of match
+    //relevant because of field-centric controls
+    public void init_loop() {
+        if (gamepad1.y) {
+            willResetIMU = false;
+        }
+    }
+    public void start () {
+        if (willResetIMU) robot.initIMU();
     }
 
-    @Override
-    public void body() throws InterruptedException {
-        robot.getLeftTop().setPower(gamepad1.left_stick_y/2);
-        robot.getLeftBottom().setPower(gamepad1.right_stick_y/2);
-        robot.getRightTop().setPower(gamepad2.left_stick_y/2);
-        robot.getRightBottom().setPower(gamepad2.right_stick_y/2);
+
+    public void loop() {
+        Vector2d joystick1 = new Vector2d(gamepad1.left_stick_x, -gamepad1.left_stick_y); //LEFT joystick
+        Vector2d joystick2 = new Vector2d(gamepad1.right_stick_x, -gamepad2.right_stick_y); //RIGHT joystick
+
+        robot.driveController0.updateUsingJoysticks(checkDeadband(joystick1), checkDeadband(joystick2));
+
+
+//        //uncomment for live tuning of ROT_ADVANTAGE constant
+//        if (gamepad1.b) {
+//            robot.driveController.moduleRight.ROT_ADVANTAGE += 0.01;
+//            robot.driveController.moduleLeft.ROT_ADVANTAGE += 0.01;
+//        }
+//        if (gamepad1.x) {
+//            robot.driveController.moduleRight.ROT_ADVANTAGE -= 0.01;
+//            robot.driveController.moduleLeft.ROT_ADVANTAGE -= 0.01;
+//        }
+//        telemetry.addData("ROT_ADVANTAGE: ", robot.driveController.moduleLeft.ROT_ADVANTAGE);
+
+
+        //to confirm that joysticks are operating properly
+        telemetry.addData("Joystick 1", joystick1);
+        telemetry.addData("Joystick 2", joystick2);
+
+        telemetry.update();
     }
 
-    @Override
-    public void exit() throws InterruptedException {
-
+    //returns zero vector if joystick is within deadband
+    public Vector2d checkDeadband(Vector2d joystick) {
+        if (Math.abs(joystick.getX()) > DEADBAND_VEC.getX() || Math.abs(joystick.getY()) > DEADBAND_VEC.getY()) {
+            return joystick;
+        }
+        return Vector2d.ZERO;
     }
 }
