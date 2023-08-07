@@ -4,27 +4,19 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 
-
-
-    public class Main {
-        DcMotor lt, rt, lb, rb;
+public class Main {
+    DcMotor lt, rt, lb, rb;
 
     public LinearOpMode opMode;
     public HardwareMap hardwareMap;
 
-    public Main(LinearOpMode opMode)
-    {
+    public Main(LinearOpMode opMode) {
         this.opMode = opMode;
         getHardware();
     }
 
-    public void getHardware()
-
-    {
+    public void getHardware() {
 
         hardwareMap = opMode.hardwareMap;
 
@@ -33,15 +25,6 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
         lb = hardwareMap.get(DcMotor.class, "left_bottom");
         rb = hardwareMap.get(DcMotor.class, "right_bottom");
 
-//        lt.setDirection(DcMotorSimple.Direction.REVERSE);
-        rt.setDirection(DcMotorSimple.Direction.REVERSE);
-//        lb.setDirection(DcMotorSimple.Direction.REVERSE);
-        rb.setDirection(DcMotorSimple.Direction.REVERSE);
-
-        lt.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        lb.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rt.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rb.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
 
     public DcMotor getLeftTop()
