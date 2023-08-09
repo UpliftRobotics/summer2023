@@ -1,10 +1,6 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.Core.Programs;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.hardware.Gamepad;
-
-import org.firstinspires.ftc.teamcode.Core.Programs.Robot;
-import org.firstinspires.ftc.teamcode.Core.Programs.Vector2d;
 
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "Diff Swerve TeleOp", group = "TeleOp")
 public class TeleOp extends OpMode {
@@ -37,7 +33,7 @@ public class TeleOp extends OpMode {
         Vector2d joystick1 = new Vector2d(gamepad1.left_stick_x, -gamepad1.left_stick_y); //LEFT joystick
         Vector2d joystick2 = new Vector2d(gamepad1.right_stick_x, -gamepad2.right_stick_y); //RIGHT joystick
 
-        robot.driveController0.updateUsingJoysticks(checkDeadband(joystick1), checkDeadband(joystick2));
+        robot.driveController.updateUsingJoysticks(checkDeadband(joystick1), checkDeadband(joystick2));
 
 
 //        //uncomment for live tuning of ROT_ADVANTAGE constant
