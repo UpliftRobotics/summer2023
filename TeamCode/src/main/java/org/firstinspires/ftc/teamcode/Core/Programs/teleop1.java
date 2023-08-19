@@ -1,19 +1,13 @@
     package org.firstinspires.ftc.teamcode.Core.Programs;
 
-    import static com.google.blocks.ftcrobotcontroller.util.Identifier.RANGE;
-
     import com.qualcomm.robotcore.util.Range;
-
-    import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-    import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
     import org.firstinspires.ftc.teamcode.Core.Main;
     import org.firstinspires.ftc.teamcode.Core.UpliftTele;
-    import org.firstinspires.ftc.teamcode.Core.UpliftAuto;
 
 
-    @TeleOp(name = "test1", group = "Opmodes")
-    public class teleop extends UpliftTele {
+    @com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "test1", group = "Opmodes")
+    public class teleop1 extends UpliftTele {
 
         Main robot;
         @Override
