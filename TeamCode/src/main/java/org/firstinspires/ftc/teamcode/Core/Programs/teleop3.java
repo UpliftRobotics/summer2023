@@ -68,8 +68,8 @@ public class teleop3 extends UpliftTele {
                 // left analog stick is pointing, using the endocers and angle of the joystick as the main 2 inputs.
                 // This assumes no skipping in, the system at all.
 
-        double magnitdude = Range.clip(Math.sqrt( Math.pow (gamepad1.left_stick_y, 2) + Math.pow(gamepad1.left_stick_x, 2 )) , 0 , .7); // get magnitude of joystick from center
-        double targetAngle = (-1 * (((Math.atan2(gamepad1.left_stick_y,-gamepad1.left_stick_x)) * 180 / Math.PI) + 90))+ 270;
+        double magnitude = Range.clip(Math.sqrt( Math.pow (gamepad1.left_stick_y, 2) + Math.pow(gamepad1.left_stick_x, 2 )) , 0 , .7); // get magnitude of joystick from center
+        double targetAngle = -1 * (((Math.atan2(-gamepad1.left_stick_y,gamepad1.left_stick_x)) * 180 / Math.PI) + 270) + 360;
         double wheelReal = (((robot.getRightTop().getCurrentPosition() + -robot.getRightBottom().getCurrentPosition()) / 2) / 2.641111 ); // get wheels angle, assuming starting from forward pos
         double wheelDiff = Math.abs(targetAngle - wheelReal);
 //        double rotationSpeed = 0;
@@ -78,20 +78,20 @@ public class teleop3 extends UpliftTele {
 //            robot.getRightTop().setPower(magnitdude + rotationSpeed);
 //            robot.getRightBottom().setPower(-magnitdude + rotationSpeed);
 
-        teleDrive(targetAngle ,magnitdude, wheelDiff , gamepad1.right_trigger ,wheelReal,robot );
+        teleDrive(targetAngle ,magnitude, wheelDiff , gamepad1.right_trigger ,wheelReal,robot );
 
 
 
         double turnPower = 0;
-        if (magnitdude > .2 && wheelDiff > 8 );
+        if (magnitude > .2 && wheelDiff > 8 );
         turnPower = .2;
-        if (magnitdude > .2 && wheelDiff < -8)
+        if (magnitude > .2 && wheelDiff < -8)
             turnPower = -.2;
-        if (magnitdude <= .2 || (wheelDiff <= 8 && wheelDiff >= -8))
+        if (magnitude <= .2 || (wheelDiff <= 8 && wheelDiff >= -8))
             turnPower = 0;
 
 
-        telemetry.addData("joystick magnitude" , magnitdude);
+        telemetry.addData("joystick magnitude" , magnitude);
         telemetry.addData("wheel degree" , wheelReal);
         telemetry.addData("joystick degree" , targetAngle);
         telemetry.addData("joystick - Wheel Difference" , wheelDiff);
