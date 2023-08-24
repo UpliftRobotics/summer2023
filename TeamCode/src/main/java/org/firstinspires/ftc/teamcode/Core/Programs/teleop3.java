@@ -68,35 +68,33 @@ public class teleop3 extends UpliftTele {
                 // left analog stick is pointing, using the endocers and angle of the joystick as the main 2 inputs.
                 // This assumes no skipping in, the system at all.
 
+//chat gpt code start
+        float angle = getJoystickAngle();   // Calculate joystick angle in degrees
+        float adjustedAngle = (angle + 90) % 360;   // Adjust angle to have 0 degrees as north and clockwise rotation
+//chat gpt code end
+
         double magnitude = Range.clip(Math.sqrt( Math.pow (gamepad1.left_stick_y, 2) + Math.pow(gamepad1.left_stick_x, 2 )) , 0 , .7); // get magnitude of joystick from center
-        double targetAngle = -1 * (((Math.atan2(-gamepad1.left_stick_y,gamepad1.left_stick_x)) * 180 / Math.PI) + 270) + 360;
-        double wheelReal = (((robot.getRightTop().getCurrentPosition() + -robot.getRightBottom().getCurrentPosition()) / 2) / 2.641111 ); // get wheels angle, assuming starting from forward pos
-        double wheelDiff = Math.abs(targetAngle - wheelReal);
-//        double rotationSpeed = 0;
-//            robot.getLeftTop().setPower(-magnitdude + rotationSpeed);
-//            robot.getLeftBottom().setPower(magnitdude + rotationSpeed);
-//            robot.getRightTop().setPower(magnitdude + rotationSpeed);
-//            robot.getRightBottom().setPower(-magnitdude + rotationSpeed);
+        double wheelPosRight = (((robot.getRightTop().getCurrentPosition() + -robot.getRightBottom().getCurrentPosition()) / 2) / 2.641111 ) % 360; // get wheels angle, assuming starting from forward pos
+        double wheelPosLeft =  -((((robot.getLeftTop().getCurrentPosition() + -robot.getLeftBottom().getCurrentPosition()) / 2) / 2.641111 ) % 360);
+        double wheelDiff = Math.abs(adjustedAngle - wheelPosRight);
+        teleDrive(adjustedAngle ,magnitude, wheelPosLeft, wheelPosRight , gamepad1.right_trigger ,robot );
 
-        teleDrive(targetAngle ,magnitude, wheelDiff , gamepad1.right_trigger ,wheelReal,robot );
-
-
-
-        double turnPower = 0;
-        if (magnitude > .2 && wheelDiff > 8 );
-        turnPower = .2;
-        if (magnitude > .2 && wheelDiff < -8)
-            turnPower = -.2;
-        if (magnitude <= .2 || (wheelDiff <= 8 && wheelDiff >= -8))
-            turnPower = 0;
-
+        double turnVal = 0;
+        if (magnitude > .2 && wheelPosLeft > (adjustedAngle + 2) )
+            turnVal  = .2;
+        if (magnitude > .2 && wheelPosLeft < (adjustedAngle - 2) )
+            turnVal = -.2;
+        if (magnitude <= .2 || (wheelPosLeft <= (adjustedAngle + 2) && wheelPosLeft >= (adjustedAngle - 2)))
+            turnVal = 0;
 
         telemetry.addData("joystick magnitude" , magnitude);
-        telemetry.addData("wheel degree" , wheelReal);
-        telemetry.addData("joystick degree" , targetAngle);
+        telemetry.addData("wheel right degree" , wheelPosRight);
+        telemetry.addData("wheel left degree" , wheelPosLeft);
+        telemetry.addData("joystick degree" , adjustedAngle);
         telemetry.addData("joystick - Wheel Difference" , wheelDiff);
-        telemetry.addData("turn power" , turnPower);
+        telemetry.addData("turn val", turnVal);
         telemetry.update();
+
 
 
 
@@ -109,23 +107,54 @@ public class teleop3 extends UpliftTele {
     }
 
     public static void teleDrive(double joystickAngle, double speedVal,
-                                 double turnVal, float slowModeInput, double wheelPos,  Main robot)
+                                 double wheelPosLeft,  double wheelPosRight, float slowModeInput,  Main robot)
     {
-        double turnPower = 0;
-        if (speedVal > .2 && turnVal > 8 );
-            turnPower = .2;
-        if (speedVal > .2 && turnVal < -8)
-             turnPower = -.2;
-        if (speedVal <= .2 || (turnVal <= 8 && turnVal >= -8))
-            turnPower = 0;
-        if (wheelPos > 360)
-            wheelPos = wheelPos - 360;
+        double turnValRight = 0;
+        double turnValLeft = 0;
+        double difference = Math.abs(wheelPosRight - joystickAngle);
 
-        robot.getLeftTop().setPower(speedVal +  turnPower);
-        robot.getLeftBottom().setPower(speedVal - turnPower);
-        robot.getRightTop().setPower(speedVal + turnPower);
-        robot.getRightBottom().setPower(speedVal - turnPower);
+        //right shit
+       if (speedVal > .2 && wheelPosRight > (joystickAngle + 5) )
+           turnValRight  = .2;
+       if (speedVal > .2 && wheelPosRight < (joystickAngle - 5) )
+           turnValRight = -.2;
+       if (speedVal <= .2 || (wheelPosRight <= (joystickAngle + 5) && wheelPosRight >= (joystickAngle - 5)))
+           turnValRight = 0;
+
+       //left shit
+        if (speedVal > .2 && wheelPosLeft > (joystickAngle + 5) )
+            turnValLeft  = .2;
+        if (speedVal > .2 && wheelPosLeft < (joystickAngle - 5) )
+            turnValLeft = -.2;
+        if (speedVal <= .2 || (wheelPosLeft <= (joystickAngle + 5) && wheelPosLeft >= (joystickAngle - 5)))
+            turnValLeft = 0;
+
+        robot.getLeftTop().setPower(speedVal +  turnValLeft);
+        robot.getLeftBottom().setPower(speedVal - turnValLeft);
+        robot.getRightTop().setPower(speedVal - turnValRight);
+        robot.getRightBottom().setPower(speedVal + turnValRight);
 
 
+
+
+    }
+
+    public float getJoystickAngle() {
+        //chat gpt code
+        double x = gamepad1.left_stick_x;
+        double y = -gamepad1.left_stick_y;
+
+        // Calculate angle in radians
+        double angleRad = Math.atan2(-y, x);
+
+        // Convert angle to degrees
+        double angleDeg = Math.toDegrees(angleRad);
+
+        // Adjust angle to be in the range of 0 to 360 degrees
+        if (angleDeg < 0) {
+            angleDeg += 360;
+        }
+
+        return (float) angleDeg;
     }
 }
