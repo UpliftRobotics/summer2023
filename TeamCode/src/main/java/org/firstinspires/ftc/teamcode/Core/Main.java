@@ -36,6 +36,7 @@ public class Main {
         rt.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rb.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
+
         lt.setDirection(DcMotorSimple.Direction.REVERSE);
 //        rt.setDirection(DcMotorSimple.Direction.REVERSE);
         lb.setDirection(DcMotorSimple.Direction.REVERSE);
