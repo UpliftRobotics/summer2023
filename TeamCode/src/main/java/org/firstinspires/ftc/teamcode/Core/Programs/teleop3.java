@@ -43,25 +43,10 @@ public class teleop3 extends UpliftTele {
     @Override
     public void bodyLoop() throws InterruptedException {
 
-        //        Manual Control
-//        robot.getLeftTop().setPower(.7 *  Range.clip(gamepad1.left_stick_y,-1,1));
-//        robot.getLeftBottom().setPower(.7 * Range.clip(gamepad1.right_stick_y,-1,1));
-//        robot.getRightTop().setPower(.7 *  Range.clip(gamepad2.left_stick_y,-1,1));
-//        robot.getRightBottom().setPower(.7 * Range.clip(gamepad2.right_stick_y,-1,1));
+// manual correction
+        robot.getLeftTop().setPower(gamepad2.left_stick_y);
+        robot.getRightTop().setPower(gamepad2.right_stick_y);
 
-//         1st test
-//                double ltpower = (Range.clip(gamepad1.left_stick_y , -.8, .8)) + (Range.clip(gamepad1.right_stick_x , -.2 , .2));
-//                double lbpower = (Range.clip(gamepad1.left_stick_y , -.8, .8)) - (Range.clip(gamepad1.right_stick_x , -.2 , .2));;
-//
-//                double rtpower = (Range.clip(gamepad1.left_stick_y , -.8, .8)) - (Range.clip(gamepad1.right_stick_x , -.2 , .2));;
-//                double rbpower = (Range.clip(gamepad1.left_stick_y , -.8, .8)) + (Range.clip(gamepad1.right_stick_x , -.2 , .2));;
-//
-//
-//
-//                robot.getLeftTop().setPower(ltpower);
-//                robot.getLeftBottom().setPower(-lbpower);
-//                robot.getRightTop().setPower(-rtpower);
-//                robot.getRightBottom().setPower(rbpower);
 
                 //2nd test
                 // This is going to a system where the wheel is basically going to just point in the direcion that the
@@ -86,7 +71,8 @@ public class teleop3 extends UpliftTele {
             wheelPosRight = wheelPosRight + 360;
         }
         double wheelDiff = Math.abs(adjustedAngle - wheelPosRight);
-        teleDrive(adjustedAngle ,magnitude, wheelPosLeft, wheelPosRight , gamepad1.left_trigger, robot );
+        teleDrive(adjustedAngle ,magnitude, wheelPosLeft, wheelPosRight , gamepad1.left_trigger, gamepad1.right_stick_x ,robot );
+        turn(robot);
 
         double turnVal = 0;
         if (magnitude > .2 && wheelPosLeft > (adjustedAngle + 2) )
@@ -96,9 +82,14 @@ public class teleop3 extends UpliftTele {
         if (magnitude <= .2 || (wheelPosLeft <= (adjustedAngle + 2) && wheelPosLeft >= (adjustedAngle - 2)))
             turnVal = 0;
 
-        if(adjustedAngle  - wheelPosRight < 180)
+        double turnDirection = 1;
+        if ((wheelPosRight > 270 && adjustedAngle < 90) || (wheelPosRight < 90 && adjustedAngle > 270))
         {
-            turn
+            turnDirection= -1;
+        }
+        if ((wheelPosRight > adjustedAngle && wheelPosRight <= 90) || ((wheelPosRight < adjustedAngle && wheelPosRight >= 270)))
+        {
+            turnDirection = 1;
         }
 
         telemetry.addData("joystick magnitude" , magnitude);
@@ -107,6 +98,7 @@ public class teleop3 extends UpliftTele {
         telemetry.addData("joystick degree" , adjustedAngle);
         telemetry.addData("joystick - Wheel Difference" , wheelDiff);
         telemetry.addData("turn val", turnVal);
+        telemetry.addData("turnDirection" , turnDirection);
         telemetry.update();
 
 
@@ -121,7 +113,7 @@ public class teleop3 extends UpliftTele {
     }
 
     public static void teleDrive(double joystickAngle, double speedVal,
-                                 double wheelPosLeft,  double wheelPosRight, double brake,  Main robot)
+                                 double wheelPosLeft,  double wheelPosRight, double brake, double turn, Main robot)
     {
         brake = Range.clip(brake , 0 , speedVal);
         boolean canReverse = true;
@@ -131,48 +123,33 @@ public class teleop3 extends UpliftTele {
         double difference = Math.abs(wheelPosRight - joystickAngle);
 
         //right shit
-       if (speedVal > .2 && wheelPosRight > (joystickAngle + 5) )
+       if (speedVal > .2 && wheelPosRight > (wheelPosLeft + 5) && turn < .1)
            turnValRight  = .2;
-       if (speedVal > .2 && wheelPosRight < (joystickAngle - 5 ))
+       if (speedVal > .2 && wheelPosRight < (wheelPosLeft - 5 )&& turn < .1)
            turnValRight = -.2;
-       if (speedVal <= .2 || (wheelPosRight <= (joystickAngle + 5) && wheelPosRight >= (joystickAngle - 5)))
+       if (speedVal <= .2 || (wheelPosRight <= (wheelPosLeft + 5) && wheelPosRight >= (wheelPosLeft - 5)) && turn >= .1)
            turnValRight = 0;
 
        //left shit
-        if (speedVal > .2 && wheelPosLeft > (joystickAngle + 5) )
+        if (speedVal > .2 && wheelPosLeft > (joystickAngle + 5) && turn < .1)
             turnValLeft  = .2;
-        if (speedVal > .2 && wheelPosLeft < (joystickAngle - 5) )
+        if (speedVal > .2 && wheelPosLeft < (joystickAngle - 5) && turn < .1)
             turnValLeft = -.2;
-        if (speedVal <= .2 || (wheelPosLeft <= (joystickAngle + 5) && wheelPosLeft >= (joystickAngle - 5)))
+        if (speedVal <= .2 || (wheelPosLeft <= (joystickAngle + 5) && wheelPosLeft >= (joystickAngle - 5)) && turn >= .1)
             turnValLeft = 0;
 
-        if(wheelPosRight < 90 && joystickAngle > 270 && canReverse)
+        if ((wheelPosRight > 270 && joystickAngle < 90) || (wheelPosRight < 90 && joystickAngle > 270))
         {
             turnDirection = -1;
         }
-        else
+        if ((wheelPosRight > joystickAngle && wheelPosRight <= 90) || ((wheelPosRight < joystickAngle && wheelPosRight >= 270)))
         {
-
+            turnDirection = 1;
         }
-
-
-
-        double rightWheelDiff = Math.abs(joystickAngle - wheelPosRight);
-//        if (rightWheelDiff > 180 && canReverse == true)
-//        {
-//            canReverse = false;
-//            turnDirection *= -1;
-//        }
-//        if (rightWheelDiff < 180)
-//        {
-//            canReverse = true;
-//        }
-
-
-        robot.getLeftTop().setPower((speedVal - brake) +  (turnDirection * turnValLeft));
-        robot.getLeftBottom().setPower((speedVal - brake) - (turnDirection * turnValLeft));
-        robot.getRightTop().setPower((speedVal - brake) - (turnDirection * turnValLeft));
-        robot.getRightBottom().setPower((speedVal - brake) + (turnDirection * turnValLeft));
+        robot.getLeftTop().setPower((speedVal - brake) +  (turnDirection * turnValLeft) + turn);
+        robot.getLeftBottom().setPower((speedVal - brake) - (turnDirection * turnValLeft) + turn);
+        robot.getRightTop().setPower((speedVal - brake) - (turnDirection * turnValLeft) - turn);
+        robot.getRightBottom().setPower((speedVal - brake) + (turnDirection * turnValLeft) - turn);
 
 
 
@@ -196,5 +173,8 @@ public class teleop3 extends UpliftTele {
         }
 
         return (float) angleDeg;
+    }
+    public void turn(Main robot)
+    {
     }
 }
