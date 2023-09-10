@@ -5,12 +5,16 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.IMU;
 
 public class Main {
     DcMotor lt, rt, lb, rb;
 
     public LinearOpMode opMode;
     public HardwareMap hardwareMap;
+
+    public IMU imu;
+
 
     public Main(LinearOpMode opMode) {
         this.opMode = opMode;

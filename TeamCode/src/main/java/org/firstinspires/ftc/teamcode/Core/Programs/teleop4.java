@@ -37,14 +37,19 @@ public class teleop4 extends UpliftTele {
     @Override
     public void bodyLoop() throws InterruptedException
     {
+
+//        robot.getLeftTop().setPower(gamepad2.left_stick_y);
+//        robot.getRightTop().setPower(gamepad2.right_stick_y);
+
 //joystick angle
         float angle = getJoystickAngle();   // Calculate joystick angle in degrees
-        float joystickAngle = (angle + 90) % 360;   // Adjust angle to have 0 degrees as north and clockwise rotation
+        float joystickAngle = ((angle+270) % 360) ;   // Adjust angle to have 0 degrees as north and clockwise rotation
         double magnitude = Range.clip(Math.sqrt( Math.pow (gamepad1.left_stick_y, 2) + Math.pow(gamepad1.left_stick_x, 2 )), 0 , .8); // get magnitude of joystick from center
         if (magnitude == 0)
             joystickAngle = 0;
         double brake = Range.clip( gamepad1.left_trigger , 0 , magnitude);
         double slowMode = 1 - Range.clip(gamepad1.right_trigger , 0 , .5);
+        boolean black = true;
 
 // wheel angle
         double wheelPosRight = (((robot.getRightTop().getCurrentPosition() + -robot.getRightBottom().getCurrentPosition()) / 2) / 2.641111 ) % 360; // get wheels angle, assuming starting from forward pos
@@ -63,7 +68,7 @@ public class teleop4 extends UpliftTele {
         double wheelTurnPowerRight = 0;
 
 //turning
-        double turn = -Range.clip(gamepad1.right_stick_x , -.8 , .8);
+        double turn = Range.clip(gamepad1.right_stick_x , -.8 , .8);
         if ((((wheelPosRight + wheelPosLeft) / 2) < 270) && ((wheelPosRight + wheelPosLeft) / 2) > 90)
             turn = -turn;
 
@@ -72,6 +77,15 @@ public class teleop4 extends UpliftTele {
         if ((wheelPosRight > (joystickAngle + 2) || wheelPosRight < (joystickAngle - 2)) && magnitude != 0)
             wheelTurnPowerRight = (wheelPosRight - joystickAngle)/ 180;
 
+        if ((joystickAngle < 90) && (wheelPosRight > 270) || ((wheelPosRight < 90) && (joystickAngle > 270))){
+            wheelTurnPowerRight *= -1;
+            black = false;
+    }
+
+        if ((joystickAngle < 90) && (wheelPosLeft > 270) || ((wheelPosLeft < 90) && (joystickAngle > 270))){
+            wheelTurnPowerLeft *= -1;
+            black = false;
+        }
 
 
 
@@ -80,10 +94,12 @@ public class teleop4 extends UpliftTele {
 
 
 
-        robot.getLeftTop().setPower(((magnitude - brake) * slowMode) +  (wheelTurnPowerLeft) + turn);
-        robot.getLeftBottom().setPower(((magnitude - brake) * slowMode) - (wheelTurnPowerLeft) + turn);
-        robot.getRightTop().setPower(((magnitude - brake) * slowMode) -  (wheelTurnPowerRight) - turn);
-        robot.getRightBottom().setPower(((magnitude - brake) * slowMode) +  (wheelTurnPowerRight) - turn);
+
+
+        robot.getLeftTop().setPower(((-magnitude + brake) * slowMode) +  (wheelTurnPowerLeft) + turn);
+        robot.getLeftBottom().setPower(((-magnitude + brake) * slowMode) - (wheelTurnPowerLeft) + turn);
+        robot.getRightTop().setPower(((-magnitude + brake) * slowMode) -  (wheelTurnPowerRight) - turn);
+        robot.getRightBottom().setPower(((-magnitude + brake) * slowMode) +  (wheelTurnPowerRight) - turn);
 
         telemetry.addData("magnitude", magnitude);
         telemetry.addData("wheelPosRight", wheelPosRight);
