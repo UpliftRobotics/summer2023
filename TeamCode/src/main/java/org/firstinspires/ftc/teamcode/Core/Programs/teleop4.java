@@ -76,10 +76,11 @@ public class teleop4 extends UpliftTele {
 
 //turning
         double rErr1 = calcAngleDelta(wheelPosRightf, joystickAngle);
+        double rErr2 = calcAngleDelta(wheelPosRightb, joystickAngle);
         double lErr1 = calcAngleDelta(wheelPosLeftf, joystickAngle);
+        double lErr2 = calcAngleDelta(wheelPosLeftb, joystickAngle);
 
         int magnitudeDir = 0;
-        int turnDir = 0;
 
         double turn = Range.clip(gamepad1.right_stick_x, -.8, .8);
         if ((((wheelPosRightf + wheelPosLeftf) / 2) < 270) && ((wheelPosRightf + wheelPosLeftf) / 2) > 90)
@@ -88,32 +89,55 @@ public class teleop4 extends UpliftTele {
         if (Math.abs(rErr1) <= 90)
         {
             magnitudeDir = 1;
-            wheelPosRightuse = wheelPosRightf;
-            if ((wheelPosRightuse > (joystickAngle + 2) || wheelPosRightuse < (joystickAngle - 2)) && magnitude != 0)
-                wheelTurnPowerRight = (wheelPosRightuse - joystickAngle) / 180;
+            if (Math.abs(rErr1) > 2 && magnitude >.1)
+                wheelTurnPowerRight = -rErr1/90;
         }
         else
         {
             magnitudeDir = -1;
-            wheelPosRightuse = wheelPosRightb;
-            if ((wheelPosRightuse > (joystickAngle + 2) || wheelPosRightuse < (joystickAngle - 2)) && magnitude != 0)
-                wheelTurnPowerRight = (wheelPosRightuse - joystickAngle) / 180;
-
+            if (Math.abs(rErr2) > 2 && magnitude > .1)
+                wheelTurnPowerRight = -rErr2/90;
         }
-
 
         if (Math.abs(lErr1) <= 90)
         {
-            wheelPosLeftuse =  wheelPosLeftf;
-            if ((wheelPosLeftuse > (joystickAngle + 2) || wheelPosLeftuse < (joystickAngle - 2)) && magnitude != 0)
-                wheelTurnPowerLeft = (wheelPosLeftuse - joystickAngle) / 180;
+            if (Math.abs(lErr1) > 2 && magnitude >.1)
+                wheelTurnPowerLeft = lErr1/90;
         }
         else
         {
-            wheelPosLeftuse =  wheelPosLeftf;
-            if ((wheelPosLeftuse > (joystickAngle + 2) || wheelPosLeftuse < (joystickAngle - 2)) && magnitude != 0)
-                wheelTurnPowerLeft = (wheelPosLeftuse - joystickAngle) / 180;
+            if (Math.abs(lErr2) > 2 && magnitude > .1)
+                wheelTurnPowerLeft = lErr2/90;
         }
+//        if (Math.abs(rErr1) <= 90)
+//        {
+//            magnitudeDir = 1;
+//            wheelPosRightuse = wheelPosRightf;
+//            if ((wheelPosRightuse > (joystickAngle + 2) || wheelPosRightuse < (joystickAngle - 2)) && magnitude != 0)
+//                wheelTurnPowerRight = (wheelPosRightuse - joystickAngle) / 180;
+//        }
+//        else
+//        {
+//            magnitudeDir = -1;
+//            wheelPosRightuse = wheelPosRightb;
+//            if ((wheelPosRightuse > (joystickAngle + 2) || wheelPosRightuse < (joystickAngle - 2)) && magnitude != 0)
+//                wheelTurnPowerRight = (wheelPosRightuse - joystickAngle) / 180;
+//
+//        }
+//
+//
+//        if (Math.abs(lErr1) <= 90)
+//        {
+//            wheelPosLeftuse =  wheelPosLeftf;
+//            if ((wheelPosLeftuse > (joystickAngle + 2) || wheelPosLeftuse < (joystickAngle - 2)) && magnitude != 0)
+//                wheelTurnPowerLeft = (wheelPosLeftuse - joystickAngle) / 180;
+//        }
+//        else
+//        {
+//            wheelPosLeftuse =  wheelPosLeftf;
+//            if ((wheelPosLeftuse > (joystickAngle + 2) || wheelPosLeftuse < (joystickAngle - 2)) && magnitude != 0)
+//                wheelTurnPowerLeft = (wheelPosLeftuse - joystickAngle) / 180;
+//        }
 
 
 
@@ -128,8 +152,8 @@ public class teleop4 extends UpliftTele {
 
 
 
-        robot.getLeftTop().setPower(((magnitude - brake) * slowMode) * magnitudeDir +  (wheelTurnPowerLeft) + turn);
-        robot.getLeftBottom().setPower(((magnitude - brake) * slowMode) * magnitudeDir - (wheelTurnPowerLeft) + turn);
+        robot.getLeftTop().setPower(((magnitude - brake) * slowMode) * magnitudeDir -  (wheelTurnPowerLeft) + turn);
+        robot.getLeftBottom().setPower(((magnitude - brake) * slowMode) * magnitudeDir + (wheelTurnPowerLeft) + turn);
         robot.getRightTop().setPower(((magnitude - brake) * slowMode * magnitudeDir) -  (wheelTurnPowerRight) - turn);
         robot.getRightBottom().setPower(((magnitude - brake) * slowMode * magnitudeDir) +  (wheelTurnPowerRight) - turn);
 
