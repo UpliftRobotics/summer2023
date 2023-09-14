@@ -12,6 +12,12 @@ import org.firstinspires.ftc.teamcode.Core.UpliftTele;
 public class teleop4 extends UpliftTele {
 
     Main robot;
+    double ltResetPos;
+    double lbResetPos;
+    double rtResetPos;
+    double rbResetPos;
+
+
     @Override
     public void initHardware()
     {
@@ -22,6 +28,11 @@ public class teleop4 extends UpliftTele {
     @Override
     public void initAction()
     {
+        ltResetPos = robot.getLeftTop().getCurrentPosition();
+        lbResetPos = robot.getLeftBottom().getCurrentPosition();
+        rtResetPos = robot.getRightTop().getCurrentPosition();
+        rbResetPos = robot.getRightBottom().getCurrentPosition();
+
         robot.getLeftTop().setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.getLeftBottom().setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.getRightTop().setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -39,6 +50,7 @@ public class teleop4 extends UpliftTele {
     @Override
     public void bodyLoop() throws InterruptedException
     {
+
 
 //        robot.getLeftTop().setPower(gamepad2.left_stick_y);
 //        robot.getRightTop().setPower(gamepad2.right_stick_y);
@@ -138,6 +150,24 @@ public class teleop4 extends UpliftTele {
 //            if ((wheelPosLeftuse > (joystickAngle + 2) || wheelPosLeftuse < (joystickAngle - 2)) && magnitude != 0)
 //                wheelTurnPowerLeft = (wheelPosLeftuse - joystickAngle) / 180;
 //        }
+        if(gamepad1.a)
+        {
+            while((wheelPosLeftf != 180) || (wheelPosRightf != 180))
+            {
+//                if((wheelPosLeftf > 181 && wheelPosLeftf < 179))
+//                {
+                    robot.getLeftTop().setPower((wheelPosLeftf-180)/720);
+                    robot.getLeftBottom().setPower(-(wheelPosLeftf-180)/720);
+//                }
+
+                telemetry.addData("wheelPosRight", wheelPosRightf);
+                telemetry.addData("wheelPosLeftf", wheelPosLeftf);
+                telemetry.update();
+
+            }
+            robot.getLeftTop().setPower(0);
+            robot.getLeftBottom().setPower(0);
+        }
 
 
 
