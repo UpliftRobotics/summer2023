@@ -6,7 +6,7 @@
     import org.firstinspires.ftc.teamcode.Core.UpliftTele;
 
 
-    @com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "test1", group = "Opmodes")
+    @com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "manual Teleop", group = "Opmodes")
     public class teleop1 extends UpliftTele {
 
         Main robot;

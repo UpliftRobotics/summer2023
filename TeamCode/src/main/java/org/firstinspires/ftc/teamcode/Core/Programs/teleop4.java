@@ -8,14 +8,11 @@ import org.firstinspires.ftc.teamcode.Core.Main;
 import org.firstinspires.ftc.teamcode.Core.UpliftTele;
 
 
-@TeleOp(name = "test4", group = "Opmodes")
+@TeleOp(name = "TeleOp", group = "Opmodes")
 public class teleop4 extends UpliftTele {
 
     Main robot;
-    double ltResetPos;
-    double lbResetPos;
-    double rtResetPos;
-    double rbResetPos;
+
 
 
     @Override
@@ -28,11 +25,8 @@ public class teleop4 extends UpliftTele {
     @Override
     public void initAction()
     {
-        ltResetPos = robot.getLeftTop().getCurrentPosition();
-        lbResetPos = robot.getLeftBottom().getCurrentPosition();
-        rtResetPos = robot.getRightTop().getCurrentPosition();
-        rbResetPos = robot.getRightBottom().getCurrentPosition();
 
+//resets encoders
         robot.getLeftTop().setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.getLeftBottom().setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.getRightTop().setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -50,11 +44,6 @@ public class teleop4 extends UpliftTele {
     @Override
     public void bodyLoop() throws InterruptedException
     {
-
-
-//        robot.getLeftTop().setPower(gamepad2.left_stick_y);
-//        robot.getRightTop().setPower(gamepad2.right_stick_y);
-
 //joystick angle
         float angle = getJoystickAngle();   // Calculate joystick angle in degrees
         float joystickAngle = ((angle+90) % 360) ;   // Adjust angle to have 0 degrees as north and clockwise rotation
@@ -63,93 +52,78 @@ public class teleop4 extends UpliftTele {
             joystickAngle = 0;
         double brake = Range.clip( gamepad1.left_trigger , 0 , magnitude);
         double slowMode = 1 - Range.clip(gamepad1.right_trigger , 0 , .5);
-        boolean black = true;
 
-// wheel angle
+// Estimates front and back position of the wheel
         double wheelPosRightf = (((robot.getRightTop().getCurrentPosition() + -robot.getRightBottom().getCurrentPosition()) / 2) / 2.641111 ) % 360; // get wheels angle, assuming starting from forward pos
         double wheelPosLeftf =  -((((robot.getLeftTop().getCurrentPosition() + -robot.getLeftBottom().getCurrentPosition()) / 2) / 2.641111 ) % 360);
         double wheelPosRightb = (wheelPosRightf + 180) % 360;
         double wheelPosLeftb = (wheelPosLeftf + 180) % 360;
-        double wheelPosRightuse;
-        double wheelPosLeftuse;
 
-        if(wheelPosRightf < 0)
-            wheelPosRightf =+ 360;
-        if(wheelPosLeftf < 0)
-            wheelPosLeftf =+ 360;
-        if(wheelPosRightf == 360)
-            wheelPosRightf = 0;
-        if(wheelPosLeftf == 360)
-            wheelPosLeftf = 0;
-
-//wheel turning
+//Intializing wheel turning variables
         double wheelTurnPowerLeft = 0;
         double wheelTurnPowerRight = 0;
 
-//turning
-        double rErr1 = calcAngleDelta(wheelPosRightf, joystickAngle);
-        double rErr2 = calcAngleDelta(wheelPosRightb, joystickAngle);
-        double lErr1 = calcAngleDelta(wheelPosLeftf, joystickAngle);
-        double lErr2 = calcAngleDelta(wheelPosLeftb, joystickAngle);
+// Getting the vector angels of error
+        double rErr1 = calcAngleDelta(wheelPosRightf, joystickAngle); // angle diff from front of wheel to target angle
+        double rErr2 = calcAngleDelta(wheelPosRightb, joystickAngle); // angle diff from back of wheel to target angle
+        double lErr1 = calcAngleDelta(wheelPosLeftf, joystickAngle); // angle diff from front of wheel to target angle
+        double lErr2 = calcAngleDelta(wheelPosLeftb, joystickAngle); // angle diff from back of wheel to target angle
 
+// Intializing reverse vairable
         int magnitudeDir = 0;
 
+// turning the entire robot
         double turn = Range.clip(gamepad1.right_stick_x, -.8, .8);
         if ((((wheelPosRightf + wheelPosLeftf) / 2) < 270) && ((wheelPosRightf + wheelPosLeftf) / 2) > 90)
             turn = -turn;
 
-        if (Math.abs(rErr1) <= 90)
+// Checks if front error of either wheel is less than 90, then will turn the wheel until both wheels have an error within 2 degs of target angle
+// given magnitdue is greater that .1
+// else, it flips the direction of the motors, then has the back of the wheel move towards target angle.
+        if (Math.abs(lErr1) <= 90 || Math.abs(rErr1) <= 90)
         {
             magnitudeDir = 1;
             if (Math.abs(rErr1) > 2 && magnitude >.1)
-                wheelTurnPowerRight = -rErr1/90;
+                wheelTurnPowerRight = -rErr1/75;
+            if (Math.abs(lErr1) > 2 && magnitude >.1)
+                wheelTurnPowerLeft = lErr1/75;
+
         }
         else
         {
             magnitudeDir = -1;
             if (Math.abs(rErr2) > 2 && magnitude > .1)
-                wheelTurnPowerRight = -rErr2/90;
+                wheelTurnPowerRight = -rErr2/75;
+            if (Math.abs(lErr2) > 2 && magnitude > .1)
+                wheelTurnPowerLeft = lErr2/75;
         }
 
-        if (Math.abs(lErr1) <= 90)
-        {
-            if (Math.abs(lErr1) > 2 && magnitude >.1)
-                wheelTurnPowerLeft = lErr1/90;
-        }
-        else
-        {
-            if (Math.abs(lErr2) > 2 && magnitude > .1)
-                wheelTurnPowerLeft = lErr2/90;
-        }
 //        if (Math.abs(rErr1) <= 90)
 //        {
 //            magnitudeDir = 1;
-//            wheelPosRightuse = wheelPosRightf;
-//            if ((wheelPosRightuse > (joystickAngle + 2) || wheelPosRightuse < (joystickAngle - 2)) && magnitude != 0)
-//                wheelTurnPowerRight = (wheelPosRightuse - joystickAngle) / 180;
+//            if (Math.abs(rErr1) > 2 && magnitude >.1)
+//                wheelTurnPowerRight = -rErr1/90;
 //        }
 //        else
 //        {
 //            magnitudeDir = -1;
-//            wheelPosRightuse = wheelPosRightb;
-//            if ((wheelPosRightuse > (joystickAngle + 2) || wheelPosRightuse < (joystickAngle - 2)) && magnitude != 0)
-//                wheelTurnPowerRight = (wheelPosRightuse - joystickAngle) / 180;
-//
+//            if (Math.abs(rErr2) > 2 && magnitude > .1)
+//                wheelTurnPowerRight = -rErr2/90;
 //        }
-//
 //
 //        if (Math.abs(lErr1) <= 90)
 //        {
-//            wheelPosLeftuse =  wheelPosLeftf;
-//            if ((wheelPosLeftuse > (joystickAngle + 2) || wheelPosLeftuse < (joystickAngle - 2)) && magnitude != 0)
-//                wheelTurnPowerLeft = (wheelPosLeftuse - joystickAngle) / 180;
+//            if (Math.abs(lErr1) > 2 && magnitude >.1)
+//                wheelTurnPowerLeft = lErr1/90;
 //        }
 //        else
 //        {
-//            wheelPosLeftuse =  wheelPosLeftf;
-//            if ((wheelPosLeftuse > (joystickAngle + 2) || wheelPosLeftuse < (joystickAngle - 2)) && magnitude != 0)
-//                wheelTurnPowerLeft = (wheelPosLeftuse - joystickAngle) / 180;
+//            if (Math.abs(lErr2) > 2 && magnitude > .1)
+//                wheelTurnPowerLeft = lErr2/90;
 //        }
+
+
+
         if(gamepad1.a)
         {
             while((wheelPosLeftf != 180) || (wheelPosRightf != 180))
